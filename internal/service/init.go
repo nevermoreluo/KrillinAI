@@ -6,9 +6,10 @@ import (
 	"krillin-ai/log"
 	"krillin-ai/pkg/aliyun"
 	"krillin-ai/pkg/fasterwhisper"
-	"krillin-ai/pkg/whispercpp"
+	"krillin-ai/pkg/ollama"
 	"krillin-ai/pkg/openai"
 	"krillin-ai/pkg/whisper"
+	"krillin-ai/pkg/whispercpp"
 	"krillin-ai/pkg/whisperkit"
 
 	"go.uber.org/zap"
@@ -45,6 +46,8 @@ func NewService() *Service {
 		chatCompleter = openai.NewClient(config.Conf.Openai.BaseUrl, config.Conf.Openai.ApiKey, config.Conf.App.Proxy)
 	case "aliyun":
 		chatCompleter = aliyun.NewChatClient(config.Conf.Aliyun.Bailian.ApiKey)
+	case "ollama":
+		chatCompleter = ollama.NewOllamaClient(config.Conf.Ollama.Model, config.Conf.Ollama.BaseUrl)
 	}
 	log.GetLogger().Info("当前选择的LLM源： ", zap.String("llm", config.Conf.App.LlmProvider))
 

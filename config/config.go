@@ -3,13 +3,14 @@ package config
 import (
 	"errors"
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"go.uber.org/zap"
 	"krillin-ai/log"
 	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
+
+	"github.com/BurntSushi/toml"
+	"go.uber.org/zap"
 )
 
 type App struct {
@@ -44,6 +45,11 @@ type Openai struct {
 	Whisper OpenAiWhisper `toml:"whisper"`
 }
 
+type Ollama struct {
+	BaseUrl string `toml:"base_url"`
+	Model   string `toml:"model"`
+}
+
 type AliyunOss struct {
 	AccessKeyId     string `toml:"access_key_id"`
 	AccessKeySecret string `toml:"access_key_secret"`
@@ -72,6 +78,7 @@ type Config struct {
 	LocalModel LocalModel `toml:"local_model"`
 	Openai     Openai     `toml:"openai"`
 	Aliyun     Aliyun     `toml:"aliyun"`
+	Ollama     Ollama     `toml:"ollama"`
 }
 
 var Conf = Config{
@@ -138,6 +145,10 @@ func validateConfig() error {
 	case "aliyun":
 		if Conf.Aliyun.Bailian.ApiKey == "" {
 			return errors.New("使用阿里云百炼服务需要配置 API Key")
+		}
+	case "ollama":
+		if Conf.Ollama.Model == "" {
+			return errors.New("需要给定一个ollama model")
 		}
 	default:
 		return errors.New("不支持的LLM提供商")
